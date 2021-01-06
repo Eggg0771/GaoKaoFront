@@ -1,5 +1,5 @@
 <template>
-  <form class="form" name="login_form" id="login_form" method="post">
+  <div class="form" id="login_form">
     <h3 style="text-align: center;margin: 1px">Please login the system</h3>
     ID number:<br/>
     <label style="text-align: center">
@@ -13,17 +13,17 @@
     <span v-if="!password&&passwordEdit" style="color: red"><br/>password shouldn't be none!</span>
     <br/>
     <router-link to="/register">Register and set password</router-link>
-    <input v-bind:disabled="!submitAble" v-bind:class="{ableButton:submitAble,disabledButton:!submitAble}" type="submit" v-on:click="submit" value="login"/>
+    <button v-bind:disabled="!submitAble" v-bind:class="{ableButton:submitAble,disabledButton:!submitAble}" v-on:click="submit0">login</button>
     <span style="color: red; display: none;margin: 0"><br/>the username or password is wrong</span>
-  </form>
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
-const instance = axios.create({
-  baseURL:'',
-  timeout: 5000
-});
+// const instance = axios.create({
+//   baseURL:'http://localhost:8090',
+//   timeout: 5000
+// });
 export default {
 name: "Login",
   data(){
@@ -40,45 +40,37 @@ name: "Login",
     }
   },
   methods:{
-    // submit: function (){
-    //   // let identify=0;
-    //   // instance({
-    //   //   url:'',method:"get"
-    //   // }).then(res=>{
-    //   //       identify=res.data.identify;
-    //   //     })
-    //   // if(identify===1)
-    //   this.$router.push({ path: `/Student` }); // -> /user/123
-    //   // else
-    //   //   this.$router.push({ path: `/404` });
-    // }
-
-    submit: function (){
+    submit0: function (){
       const ID=this.ID;
       //let obj = this;
       window.console.log(ID)
-      instance({
-        url:'/login',method:"post",
-        data: {
-          "ID": this.ID,
-          "Password": this.password
-        }
-      }).then(function (response) {
-        window.console.log(response)
-        // if (response.data !== null) {
-        //   alert('登录成功');
-        //   let id = response.data.data.Id;
-        //   if (response.data.data.Identity === 0) {
-        //     obj.$router.push({ path: `/student/${id}` });
-        //   }
-        //   else if (response.data.data.Identity === 1) {
-        //     obj.$router.push({ path: `/teacher/${id}` }); // -> /user/123
-        //   }
-        // }
-        // else {
-        //   alert('登录失败，用户名或密码错误');
-        // }
-      })
+      // instance.get('/login',{
+      //   params: {
+      //     "idcard": this.ID,
+      //     "password": this.password
+      //   }
+      // }).then(function (response) {
+      //   window.console.log(response)
+      //   // if (response.data !== null) {
+      //   //   alert('登录成功');
+      //   //   let id = response.data.data.Id;
+      //   //   if (response.data.data.Identity === 0) {
+      //   //     obj.$router.push({ path: `/student/${id}` });
+      //   //   }
+      //   //   else if (response.data.data.Identity === 1) {
+      //   //     obj.$router.push({ path: `/teacher/${id}` }); // -> /user/123
+      //   //   }
+      //   // }
+      //   // else {
+      //   //   alert('登录失败，用户名或密码错误');
+      //   // }
+      // })
+      // .catch(function (error){
+      //   window.alert(error)
+      // })
+      axios.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+      .then(res=>(window.alert(res)))
+      .catch(error=>window.alert(error))
     }
   }
 }
