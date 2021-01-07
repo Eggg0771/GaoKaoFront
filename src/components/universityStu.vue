@@ -12,7 +12,7 @@
         <th style="width: 70px">Total Score</th>
         <th style="width: 150px">Major</th>
         <th style="width: 30px">State</th>
-        <th style="width: 100px">Option</th>
+<!--        <th style="width: 100px">Option</th>-->
       </tr>
       <tbody>
       <tr v-for="(student,index) in students" v-bind:key="index">
@@ -25,14 +25,14 @@
         <td>{{student.scores.chinese+student.scores.math+student.scores.english+student.scores.integration}}</td>
         <td>{{student.major}}</td>
         <td v-bind:class="{gray0:student.state==='TBD',red0:student.state==='Rejected',green0:student.state==='Accepted'}">{{student.state}}</td>
-        <td>
-          <input class="button2" type="button" value="Matriculate" v-on:click="student.state='Accepted'"/>
-          <input class="button2" type="button" value="Reject" v-on:click="student.state='Rejected'"/>
-        </td>
+<!--        <td>-->
+<!--          <input class="button2" type="button" value="Matriculate" v-on:click="student.state='Accepted'"/>-->
+<!--          <input class="button2" type="button" value="Reject" v-on:click="student.state='Rejected'"/>-->
+<!--        </td>-->
       </tr>
       </tbody>
     </table>
-    <input class="button2" type="submit" value="Submit" v-on:click="submit">
+<!--    <input class="button2" type="submit" value="Submit" v-on:click="submit">-->
   </form>
 
 </template>
@@ -43,14 +43,14 @@ name: "universityStu",
   data(){
     return{
       students:[
-        {name:"Li Hua", major:"computer science", state:"TBD", id:"000000000000000000",
+        {name:"Li Hua", major:"computer science", state:"Accepted", id:"000000000000000000",
           scores: {
             chinese:150,
             math:150,
             english:150,
             integration:300
           }},
-        {name:"Li Lei", major:"physics", state:"TBD", id:"111111111111111111",
+        {name:"Li Lei", major:"physics", state:"Rejected", id:"111111111111111111",
           scores: {
             chinese:0,
             math:0,

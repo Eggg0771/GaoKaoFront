@@ -5,20 +5,16 @@
       <tr>
         <th style="width: 100px">ID code</th>
         <th style="width: 400px">Name</th>
-        <th style="width: 100px">Province</th>
-        <th style="width: 100px">City</th>
       </tr>
       <tbody>
-      <tr v-for="(university,index) in universities" v-bind:key="index" v-on:click="chosenUniversity=university.name">
+      <tr v-for="(university,index) in universities" v-bind:key="index" v-on:click="chosenUniversity=university">
         <td style="width: 100px">{{university.id}}</td>
         <td style="width: 400px">{{university.name}}</td>
-        <td style="width: 100px">{{university.province}}</td>
-        <td style="width: 100px">{{university.city}}</td>
       </tr>
       </tbody>
     </table>
     <div v-if="chosenUniversity&&universities">
-    <h2>Matriculation of {{ chosenUniversity }}</h2>
+    <h2>Matriculation of {{ chosenUniversity.name }}</h2>
     <table class="table2">
       <tr>
         <th style="width: 50px">Name</th>
@@ -50,44 +46,13 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
 name: "examUniversity",
   data(){
   return{
-    universities:[
-      {id:10001,name:"Peking University",province:null,city:"Beijing",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]},
-      {id:10002,name:"Renmin University of China",province:null,city:"Beijing",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]},
-      {id:10003,name:"Tsinghua University",province:null,city:"Beijing",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]},
-      {id:14325,name:"Southern University of Science and Technology",province:"Guangdong",city:"Shenzhen",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]}
-    ],
+    universities:[],
     chosenUniversity:undefined,
     students:[
       {name:"Li Hua", major:"computer science", state:"Accepted", id:"000000000000000000",
@@ -106,6 +71,49 @@ name: "examUniversity",
         }}
     ]
   }
+  },
+beforeMount() {
+  this.id=this.$route.params.id
+  let obj = this;
+  //alert("Yeah")
+  axios.get('/university/get')
+      .then(function (res){
+        obj.universities=[];
+        for(let i=0;i<res.data.length;i++){
+          obj.universities.push({id:res.data[i].idcode,name:res.data[i].name})
+        }
+      })
+      .catch(error=>window.alert(error))
+},
+  watch:{
+    chosenUniversity:function (val){
+      let obj=this;
+      axios.get('/university/getStudents',{
+        params:{idcode:val.id}
+      }).then(function (res) {
+        window.console.log(res);
+        obj.students=[];
+        for(let i=0;i<res.data.length;i++){
+          let state;
+          if(res.data[i].universityandmajor===null)
+            state='Rejected';
+          else
+            state='Accepted'
+          obj.students.push({
+            name:res.data[i].name,
+            major:res.data[i].majorName,
+            state:state,
+            id:res.data[i].idcard,
+            scores:{
+              chinese:res.data[i].chinese,
+              math:res.data[i].math,
+              english:res.data[i].english,
+              integration:res.data[i].integration
+            }
+          })
+        }
+      }).catch(error=>alert(error))
+    }
   }
 }
 </script>

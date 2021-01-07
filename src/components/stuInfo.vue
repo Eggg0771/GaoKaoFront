@@ -28,40 +28,72 @@
     </div>
     <div v-if="isSubmit" style="margin: 10px;padding: 10px">
       <h3>Aspirations</h3>
-      <span v-for="(aspiration,index) in aspirations" v-bind:key="index">
-            <h4>Aspiration {{aspiration.id}}</h4>
-            University:{{aspiration.university}}<br/>
-            Major:{{aspiration.major}}
+      <span>
+            University:{{aspirations.university}}<br/>
+            Major:{{aspirations.major}}
         </span>
     </div>
   </form>
 </template>
 
 <script>
+import axios from 'axios'
+const instance = axios.create({
+  baseURL:'',
+  timeout: 5000
+});
 export default {
   name: "stuInfo",
   data() {
     return {
-      name: "Li Hua",
-      id: "000000000000000000",
+      name: "",
+      id: "",
       isGrade: true,
       scores: {
-        chinese: 150,
-        math: 150,
-        english: 150,
-        integration: 300
-
+        chinese: -1,
+        math: -1,
+        english: -1,
+        integration: -1
       },
       isSubmit:true,
-      aspirations:[
-        {id:1,university:"Tsinghua University",major:"physics"},
-        {id:2,university:"Peking University",major:"literature"},
-        {id:3,university:"Southern University of Science and Technology",major: "computer science and technology"},
-        {id:4,university:undefined,major: undefined},
-        {id:5,aspiration5:undefined,major: undefined}
-      ]
+      aspirations: {}
     }
+  },
+
+  beforeMount() {
+    this.id=this.$route.params.id
+    let obj = this;
+    //alert("Yeah")
+    instance.get('/student',{
+      params:{
+        idcard:this.id
+      }
+    }).then(function (res){
+      window.console.log(res);
+      obj.name=res.data.name;
+      obj.id=res.data.idcard;
+      // this.isGrade=res.data.isGrade;
+      obj.scores= {
+        chinese:res.data.chinese,
+        math:res.data.math,
+        english:res.data.english,
+        integration:res.data.integration
+      };
+      obj.isSubmit=res.data.state;
+      if(res.data.university!==null) {
+        obj.aspirations = {
+          university: res.data.university.name == null ? null : res.data.university.name,
+          major: res.data.majorName == null ? null : res.data.majorName
+        }
+      }else
+        obj.aspirations = {
+          university: null,
+          major: null
+        }
+    })
+        .catch(error=>window.console.log(error))
   }
+
 }
 </script>
 

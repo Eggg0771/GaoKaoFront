@@ -8,45 +8,41 @@
           <tr>
             <th style="width: 100px">ID code</th>
             <th style="width: 400px">Name</th>
-            <th style="width: 100px">Province</th>
-            <th style="width: 100px">City</th>
           </tr>
           <tbody>
           <tr v-for="(university,index) in universities" v-on:click="chosenUniversity=university" v-bind:key="index">
             <td>{{university.id}}</td>
             <td>{{university.name}}</td>
-            <td>{{university.province}}</td>
-            <td>{{university.city}}</td>
           </tr>
           </tbody>
         </table>
       </td><td v-if="chosenUniversity">
         <div style="margin: 10px;padding: 10px;background-color: gold">
           <h4>Majors of {{chosenUniversity.name}}</h4>
-          <li v-for="(major,index) in chosenUniversity.majors" v-bind:key="index">
-            {{ major.name }}
+          <li v-for="(major,index) in chosenMajor" v-bind:key="index">
+            {{ major }}
           </li></div>
       </td></tr></table>
-    <div v-if="isRelease===1" style="background-color: gold;margin: 10px;padding: 10px">
+    <div v-if="isRelease===0" style="background-color: gold;margin: 10px;padding: 10px">
       <h2>Aspiration Selection</h2>
       <table class="table1">
-      <tr v-for="index in [1,2,3,4,5]" v-bind:key="index">
+      <tr>
         <td>
         <h4>Aspiration {{ index }}</h4>
         Please choose a university and a major:
         <label>
-          <select v-model="aspirations[index-1]" style="width: 200px">
-            <option :value=undefined>Please choose your aspiration</option>
+          <select v-model="aspirations" style="width: 200px">
+            <option :selected="true" :value=undefined>Please choose your aspiration</option>
             <option v-for="(university,index) in universities" v-bind:key="index" :value="university">{{university.id}}</option>
           </select>
         </label>
         <label>
-          <select v-if="aspirations[index-1]" v-model="majors[index-1]" style="width: 200px">
+          <select v-if="aspirations" v-model="majors" style="width: 200px">
             <option :selected="true" :value=undefined>Please choose your major</option>
-            <option v-for="(major,index) in aspirations[index-1].majors" v-bind:key="index" :value="major.name">{{major.name}}</option>
+            <option v-for="(major,index) in selectedMajor" v-bind:key="index" :value="major">{{major}}</option>
           </select>
         </label><br/>
-        <span v-if="aspirations[index-1]">Your first aspiration is {{aspirations[index-1].name}} {{majors[index-1]}}</span>
+        <span v-if="aspirations">Your first aspiration is {{aspirations.name}} {{majors}}</span>
         </td></tr></table>
       <input class="button" type="submit" value="Save" v-on:click="save">
       <input class="button" type="submit" value="Submit" v-on:click="submit">
@@ -56,65 +52,98 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
 name: "Aspiration",
   data(){
   return{
-    isRelease:1,
-    aspirations:[{id:10001,name:"Peking University",province:null,city:"Beijing",
-      majors:[
-        {name: "physics"},
-        {name: "mathematics"},
-        {name: "chemistry"},
-        {name: "biology"},
-        {name: "computer science"}
-      ]}],
-    majors:["computer science"],
+    id:"",
+    isRelease:0,
+    aspirations:undefined,
+    selectedMajor:[],
+    majors:undefined,
     universities:[
-      {id:10001,name:"Peking University",province:null,city:"Beijing",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]},
-      {id:10002,name:"Renmin University of China",province:null,city:"Beijing",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]},
-      {id:10003,name:"Tsinghua University",province:null,city:"Beijing",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]},
-      {id:14325,name:"Southern University of Science and Technology",province:"Guangdong",city:"Shenzhen",
-        majors:[
-          {name: "physics"},
-          {name: "mathematics"},
-          {name: "chemistry"},
-          {name: "biology"},
-          {name: "computer science"}
-        ]}
+      {id:10001,name:"Peking University"},
+      {id:10002,name:"Renmin University of China"},
+      {id:10003,name:"Tsinghua University"},
+      {id:14325,name:"Southern University of Science and Technology"}
     ],
-    chosenUniversity:undefined
+    chosenUniversity:undefined,
+    chosenMajor:[]
   }
   },
   methods:{
     save:function () {
-      alert("Save successfully!")
+      if(this.aspirations===undefined||this.majors===undefined)
+        alert("You haven't chosen your aspiration yet.")
+      else {
+        axios.get('/student/save', {
+          params: {
+            idcard: this.id,
+            idcode: this.aspirations.id,
+            name:this.majors
+          }
+        }).then(function (res) {
+          if (res.data === true)
+            alert("Save successfully!")
+        })
+            .catch(error => alert(error))
+      }
     },
     submit:function () {
       if(confirm("Sure to submit your aspirations?\nWhich will seal and couldn't be changed anymore.")===true){
-        this.isRelease=2;
+        axios.get('/student/submit',{
+          params:{
+            idcard: this.id,
+            idcode: this.aspirations.id,
+            name:this.majors
+          }
+        }).then(res=>res)
+            .catch(error=>alert(error))
       }
+    }
+  },
+  beforeMount() {
+    this.id=this.$route.params.id
+    let obj = this;
+    //alert("Yeah")
+    axios.get('/university/get')
+        .then(function (res){
+        window.console.log(res);
+        obj.universities=[];
+        for(let i=0;i<res.data.length;i++){
+          obj.universities.push({id:res.data[i].idcode,name:res.data[i].name})
+        }
+    })
+        .catch(error=>window.alert(error))
+    axios.get('/student',{
+      params:{idcard:this.id}
+    }).then(function (res) {
+      window.console.log(res);
+      obj.isRelease=res.data.state;
+        obj.aspirations={
+          id:res.data.university.idcode==null?null:res.data.university.idcode,
+          name:res.data.university.name==null?null:res.data.university.name
+        }
+        obj.majors=res.data.majorName==null?null:res.data.majorName
+    })
+  },
+  watch:{
+    aspirations:function (val) {
+      axios.get('/university/getMajors',{
+        params:{
+          idcode:val.id
+        }
+      }).then(res=>this.selectedMajor=res.data.major)
+      .catch(error=>alert(error))
+    },
+    chosenUniversity:function (val) {
+      axios.get('/university/getMajors',{
+        params:{
+          idcode:val.id
+        }
+      }).then(res=>this.chosenMajor=res.data.major)
+          .catch(error=>alert(error))
     }
   }
 }

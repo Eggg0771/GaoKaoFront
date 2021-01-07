@@ -7,8 +7,8 @@
       <input type="submit" value="Submit" v-on:click="submit"/>
       <br/><br/><h4>Single Examinee Management </h4>
       Examinee ID:<label><input type="text" v-model="examineeID"/></label>.
-      <input type="button" v-bind:disabled="!examineeID" v-on:click="addExaminee" value="add"/>
-      <input type="button" v-bind:disabled="!examineeID" v-on:click="delExaminee" value="delete"/>
+      <input type="button" v-on:click="addExaminee" value="add"/>
+      <input type="button" v-on:click="delExaminee" value="delete"/>
     </div>
   </form>
 
