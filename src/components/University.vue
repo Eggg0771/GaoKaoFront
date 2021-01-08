@@ -19,7 +19,7 @@
     <!--/.Navbar-->
     <!-- Sidebar -->
     <div class="sidebar-fixed position-fixed">
-      <br/><h2>Hi, {{ID}}</h2>
+      <br/><h2>Hi, {{user}}</h2>
       <mdb-list-group class="list-group-flush">
         <router-link :to="'/university/'+ID+'/major'" @click.native="activeItem = 1">
           <mdb-list-group-item
@@ -57,7 +57,7 @@ import {
   mdbListGroupItem,
   waves
 } from "mdbvue";
-
+import axios from'axios'
 export default {
   name: "University",
   components: {
@@ -72,6 +72,7 @@ export default {
   data() {
     return {
       activeItem: 1,
+      user:''
     };
   },
   computed: {
@@ -80,7 +81,12 @@ export default {
     }
   },
   beforeMount() {
-
+    axios.get('/university/getMajors',{
+      params:{
+        idcode:this.ID
+      }
+    }).then(res=>this.user=res.data.name)
+            .catch(error=>window.alert(error))
   },
   mixins: [waves]
 };

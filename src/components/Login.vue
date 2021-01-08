@@ -66,14 +66,14 @@ export default {
       })
           // axios.get('student/login?idcard='+this.ID+'&password='+this.password)
           .then(function (response) {
-            // window.console.log(response)
-            if (response.data !== null) {
+            window.console.log(response);
+            if (response.data !== "") {
               let id = response.data.identify;
               if (id === 0) {
                 obj.$router.push({ path: `/student/${ID}`});
               }
               else if (id === 1) {
-                obj.$router.push({ path: `/university/${ID}` }); // -> /user/123
+                obj.$router.push({ path: `/university/${response.data.idcode}` }); // -> /user/123
               }
               else if(id===2){
                 obj.$router.push({ path: `/institute` });

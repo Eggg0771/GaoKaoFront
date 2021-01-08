@@ -41,6 +41,7 @@
       </tr>
       </tbody>
     </table></div>
+    <button v-on:click="mat">Matriculate</button>
   </form>
 
 </template>
@@ -85,6 +86,11 @@ beforeMount() {
       })
       .catch(error=>window.alert(error))
 },
+  methods:{
+    mat:function () {
+      axios.get('/admitted').then(res=>window.console.log(res)).catch(error=>alert(error))
+    }
+  },
   watch:{
     chosenUniversity:function (val){
       let obj=this;
@@ -95,10 +101,10 @@ beforeMount() {
         obj.students=[];
         for(let i=0;i<res.data.length;i++){
           let state;
-          if(res.data[i].universityandmajor===null)
-            state='Rejected';
+          if(res.data[i].universityandmajor===0)
+            state='TBD';
           else
-            state='Accepted'
+            state='Accepted';
           obj.students.push({
             name:res.data[i].name,
             major:res.data[i].majorName,

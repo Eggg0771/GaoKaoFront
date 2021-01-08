@@ -31,19 +31,19 @@ export default new Router({
       component: Register
     },
     {
-      path: '/student',
+      path: '/student/:id',
       component: Student,
       children: [
         {
-          path: '/student',
-          redirect: '/student/info',
+          path: '/student/:id',
+          redirect: '/student/:id/info',
         },
         {
-          path: '/student/info',
+          path: '/student/:id/info',
           component: stuInfo,
         },
         {
-          path: '/student/aspirate',
+          path: '/student/:id/aspirate',
           component: stuAspiration,
         }
       ]

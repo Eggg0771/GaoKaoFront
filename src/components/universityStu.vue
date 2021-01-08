@@ -38,6 +38,7 @@
 </template>
 
 <script>
+  import axios from 'axios'
 export default {
 name: "universityStu",
   data(){
@@ -70,6 +71,34 @@ name: "universityStu",
         }
       }
     }
+  },
+  beforeMount() {
+    let obj=this;
+    axios.get('/university/getStudents',{
+      params:{idcode:this.$route.params.id}
+    }).then(function (res) {
+      window.console.log(res);
+      obj.students=[];
+      for(let i=0;i<res.data.length;i++){
+        let state;
+        if(res.data[i].universityandmajor===0)
+          state='TBD';
+        else
+          state='Accepted';
+        obj.students.push({
+          name:res.data[i].name,
+          major:res.data[i].majorName,
+          state:state,
+          id:res.data[i].idcard,
+          scores:{
+            chinese:res.data[i].chinese,
+            math:res.data[i].math,
+            english:res.data[i].english,
+            integration:res.data[i].integration
+          }
+        })
+      }
+    }).catch(error=>alert(error))
   }
 }
 </script>
