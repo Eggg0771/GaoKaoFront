@@ -129,6 +129,7 @@ main {
 }
 
 .sidebar-fixed .logo-wrapper img {
+
   width: 100%;
   padding: 2.5rem;
 }
